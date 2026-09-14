@@ -118,9 +118,9 @@ As an administrator, I want document activity and summary reports so that I can 
 - **FR-011**: The system MUST provide filters for category, associated project, and date range.
 - **FR-012**: The system MUST search accessible documents by title, description, tags, uploader name, and associated project without returning inaccessible documents.
 - **FR-013**: The system MUST allow authorized users to download accessible documents and preview accessible PDFs and images in the browser.
-- **FR-014**: The system MUST allow document owners to edit metadata and replace the document file, subject to the same validation and security rules as upload.
+- **FR-014**: The system MUST allow document owners and administrators to edit metadata and replace the document file, subject to the same validation and security rules as upload.
 - **FR-015**: The system MUST allow document owners to share documents with selected authenticated users or existing teams, including recipients outside the document's project membership, and MUST place shared documents in recipients' Shared with Me view; public and external sharing MUST NOT be allowed.
-- **FR-016**: The system MUST allow document owners to delete their documents after confirmation and allow project managers to delete documents in their projects; deleted documents MUST no longer be accessible.
+- **FR-016**: The system MUST allow document owners to delete their documents after confirmation, allow project managers to delete documents in their projects, and allow administrators to delete any document; deleted documents MUST no longer be accessible.
 - **FR-017**: The system MUST notify recipients when documents are shared and eligible project members when a new project document is added.
 - **FR-018**: The system MUST support document attachment and upload from authorized task views and MUST associate task documents with the task's project.
 - **FR-019**: The dashboard MUST show the current user's five most recent documents and a document count in its summary area.
