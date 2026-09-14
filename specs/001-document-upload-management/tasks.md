@@ -11,10 +11,10 @@
 
 **Purpose**: Establish the testable project surface without changing production behavior.
 
-- [ ] T001 Create the `ContosoDashboard.Tests` test project targeting `net10.0` and reference `ContosoDashboard/ContosoDashboard.csproj` in `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`
-- [ ] T002 [P] Add the test project to a repository solution or document its standalone `dotnet test` invocation in `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`
-- [ ] T003 [P] Create shared test fixtures for seeded users, projects, project memberships, and isolated EF Core data in `ContosoDashboard.Tests/Fixtures/TestDataFactory.cs`
-- [ ] T004 [P] Create fake storage and scanner implementations used by tests in `ContosoDashboard.Tests/Fakes/FakeFileStorageService.cs` and `ContosoDashboard.Tests/Fakes/FakeFileScanService.cs`
+- [X] T001 Create the `ContosoDashboard.Tests` test project targeting `net10.0` and reference `ContosoDashboard/ContosoDashboard.csproj` in `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`
+- [X] T002 [P] Add the test project to a repository solution or document its standalone `dotnet test` invocation in `ContosoDashboard.Tests/ContosoDashboard.Tests.csproj`
+- [X] T003 [P] Create shared test fixtures for seeded users, projects, project memberships, and isolated EF Core data in `ContosoDashboard.Tests/Fixtures/TestDataFactory.cs`
+- [X] T004 [P] Create fake storage and scanner implementations used by tests in `ContosoDashboard.Tests/Fakes/FakeFileStorageService.cs` and `ContosoDashboard.Tests/Fakes/FakeFileScanService.cs`
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
@@ -22,19 +22,19 @@
 
 **Checkpoint**: No user story implementation should begin until these tasks are complete and the application builds.
 
-- [ ] T005 [P] Create the `Document` entity with integer `DocumentId`, required `Title` max 255, nullable `Description` max 2000, required text `Category` max 100, nullable `Tags`, display-only `FileName` max 255, relative `FilePath` max 1024, `FileType` max 255, `long FileSize`, uploader/project/task foreign keys, UTC timestamps, and nullable `DeletedDate` in `ContosoDashboard/Models/Document.cs`
-- [ ] T006 [P] Create the `DocumentShare` entity with integer key, document/grantor/recipient references, exactly one authenticated user or existing team recipient, grant/revoke timestamps, and active-recipient uniqueness fields in `ContosoDashboard/Models/DocumentShare.cs`
-- [ ] T007 [P] Create the append-only `DocumentActivity` entity with document, actor, action text, occurrence time, `RetainUntil`, and bounded non-sensitive details in `ContosoDashboard/Models/DocumentActivity.cs`
-- [ ] T008 Add `DbSet` declarations, foreign-key relationships, delete behavior, uniqueness constraints, and indexes for documents, shares, and activities in `ContosoDashboard/Data/ApplicationDbContext.cs`
-- [ ] T009 [P] Define the `IFileStorageService` contract and local implementation with a configured root outside `wwwroot`, normalized relative paths, traversal/absolute-path rejection, GUID-based paths, async upload/delete/open/exists operations, and no use of client filenames as stored paths in `ContosoDashboard/Services/FileStorageService.cs`
-- [ ] T010 [P] Define `IFileScanService` and implement deterministic offline safe/malware fixture results, scan-failure rejection, and cancellation behavior in `ContosoDashboard/Services/FileScanService.cs`
-- [ ] T011 [P] Add document request/result, filter/sort, share, audit-report, and authorized-content DTOs with the six exact category values and supported file whitelist in `ContosoDashboard/Services/DocumentContracts.cs`
-- [ ] T012 Implement shared document authorization predicates for owner, team lead, project manager, administrator, project membership, task access, active user/team shares, deleted-state exclusion, and no public/external access in `ContosoDashboard/Services/DocumentAuthorization.cs`
-- [ ] T013 Register storage, scanning, and document service dependencies with configured local upload root in `ContosoDashboard/Program.cs`
-- [ ] T014 Create the initial `IDocumentService`/`DocumentService` structure and shared validation helpers for non-empty files, 25 MB maximum, extension/MIME whitelist, required title/category, authorized associations, and safe error results in `ContosoDashboard/Services/DocumentService.cs`
-- [ ] T015 Map authenticated `/documents/{documentId}/content` and `/documents/{documentId}/preview` endpoints that delegate to `OpenContentAsync`, use safe access-denied responses, and never expose physical paths in `ContosoDashboard/Program.cs`
-- [ ] T016 [P] Add foundational persistence and authorization tests for integer keys, text categories, relationship constraints, deleted-document exclusion, and role/share predicates in `ContosoDashboard.Tests/Foundational/DocumentFoundationTests.cs`
-- [ ] T017 [P] Add storage and scanner contract tests for path traversal rejection, GUID path generation, root isolation, safe fixtures, malware fixtures, and scan failure in `ContosoDashboard.Tests/Foundational/StorageAndScanTests.cs`
+- [X] T005 [P] Create the `Document` entity with integer `DocumentId`, required `Title` max 255, nullable `Description` max 2000, required text `Category` max 100, nullable `Tags`, display-only `FileName` max 255, relative `FilePath` max 1024, `FileType` max 255, `long FileSize`, uploader/project/task foreign keys, UTC timestamps, and nullable `DeletedDate` in `ContosoDashboard/Models/Document.cs`
+- [X] T006 [P] Create the `DocumentShare` entity with integer key, document/grantor/recipient references, exactly one authenticated user or existing team recipient, grant/revoke timestamps, and active-recipient uniqueness fields in `ContosoDashboard/Models/DocumentShare.cs`
+- [X] T007 [P] Create the append-only `DocumentActivity` entity with document, actor, action text, occurrence time, `RetainUntil`, and bounded non-sensitive details in `ContosoDashboard/Models/DocumentActivity.cs`
+- [X] T008 Add `DbSet` declarations, foreign-key relationships, delete behavior, uniqueness constraints, and indexes for documents, shares, and activities in `ContosoDashboard/Data/ApplicationDbContext.cs`
+- [X] T009 [P] Define the `IFileStorageService` contract and local implementation with a configured root outside `wwwroot`, normalized relative paths, traversal/absolute-path rejection, GUID-based paths, async upload/delete/open/exists operations, and no use of client filenames as stored paths in `ContosoDashboard/Services/FileStorageService.cs`
+- [X] T010 [P] Define `IFileScanService` and implement deterministic offline safe/malware fixture results, scan-failure rejection, and cancellation behavior in `ContosoDashboard/Services/FileScanService.cs`
+- [X] T011 [P] Add document request/result, filter/sort, share, audit-report, and authorized-content DTOs with the six exact category values and supported file whitelist in `ContosoDashboard/Services/DocumentContracts.cs`
+- [X] T012 Implement shared document authorization predicates for owner, team lead, project manager, administrator, project membership, task access, active user/team shares, deleted-state exclusion, and no public/external access in `ContosoDashboard/Services/DocumentAuthorization.cs`
+- [X] T013 Register storage, scanning, and document service dependencies with configured local upload root in `ContosoDashboard/Program.cs`
+- [X] T014 Create the initial `IDocumentService`/`DocumentService` structure and shared validation helpers for non-empty files, 25 MB maximum, extension/MIME whitelist, required title/category, authorized associations, and safe error results in `ContosoDashboard/Services/DocumentService.cs`
+- [X] T015 Map authenticated `/documents/{documentId}/content` and `/documents/{documentId}/preview` endpoints that delegate to `OpenContentAsync`, use safe access-denied responses, and never expose physical paths in `ContosoDashboard/Program.cs`
+- [X] T016 [P] Add foundational persistence and authorization tests for integer keys, text categories, relationship constraints, deleted-document exclusion, and role/share predicates in `ContosoDashboard.Tests/Foundational/DocumentFoundationTests.cs`
+- [X] T017 [P] Add storage and scanner contract tests for path traversal rejection, GUID path generation, root isolation, safe fixtures, malware fixtures, and scan failure in `ContosoDashboard.Tests/Foundational/StorageAndScanTests.cs`
 
 ## Phase 3: User Story 1 - Upload and Organize a Document (Priority: P1) 🎯 MVP
 
@@ -44,16 +44,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T018 [P] [US1] Add upload contract tests for required title/category, six category values, optional description/tags/project/task, 25 MB limit, supported MIME types, and generated metadata in `ContosoDashboard.Tests/US1/DocumentUploadValidationTests.cs`
-- [ ] T019 [P] [US1] Add upload authorization and compensation tests for project membership, unauthorized associations, scan rejection, storage failure, metadata persistence failure cleanup, and audit creation in `ContosoDashboard.Tests/US1/DocumentUploadServiceTests.cs`
+- [X] T018 [P] [US1] Add upload contract tests for required title/category, six category values, optional description/tags/project/task, 25 MB limit, supported MIME types, and generated metadata in `ContosoDashboard.Tests/US1/DocumentUploadValidationTests.cs`
+- [X] T019 [P] [US1] Add upload authorization and compensation tests for project membership, unauthorized associations, scan rejection, storage failure, metadata persistence failure cleanup, and audit creation in `ContosoDashboard.Tests/US1/DocumentUploadServiceTests.cs`
 
 ### Implementation for User Story 1
 
-- [ ] T020 [US1] Implement `UploadAsync` in `ContosoDashboard/Services/DocumentService.cs` using validate -> authorize -> scan -> generate unique path -> save file -> persist metadata -> audit/notification sequencing and cleanup on persistence failure
-- [ ] T021 [US1] Add upload progress state, multi-file selection, required title/category fields, optional metadata, supported-file validation, clear success/error messages, and safe retry behavior in `ContosoDashboard/Pages/Documents.razor`
-- [ ] T022 [US1] Add accessible upload modal styles and stable progress/error presentation in `ContosoDashboard/wwwroot/css/site.css`
-- [ ] T023 [US1] Register upload success/failure and project-document notification creation through `INotificationService` in `ContosoDashboard/Services/DocumentService.cs`
-- [ ] T024 [US1] Seed or fixture representative safe and malware-positive training files without storing real user content in `ContosoDashboard/Data/ApplicationDbContext.cs` and `ContosoDashboard.Tests/Fixtures/TestFiles/`
+- [X] T020 [US1] Implement `UploadAsync` in `ContosoDashboard/Services/DocumentService.cs` using validate -> authorize -> scan -> generate unique path -> save file -> persist metadata -> audit/notification sequencing and cleanup on persistence failure
+- [X] T021 [US1] Add upload progress state, multi-file selection, required title/category fields, optional metadata, supported-file validation, clear success/error messages, and safe retry behavior in `ContosoDashboard/Pages/Documents.razor`
+- [X] T022 [US1] Add accessible upload modal styles and stable progress/error presentation in `ContosoDashboard/wwwroot/css/site.css`
+- [X] T023 [US1] Register upload success/failure and project-document notification creation through `INotificationService` in `ContosoDashboard/Services/DocumentService.cs`
+- [X] T024 [US1] Seed or fixture representative safe and malware-positive training files without storing real user content in `ContosoDashboard/Data/ApplicationDbContext.cs` and `ContosoDashboard.Tests/Fixtures/TestFiles/`
 
 **Checkpoint**: A user can independently upload a safe supported document, see progress/result feedback, and verify invalid content never becomes available.
 

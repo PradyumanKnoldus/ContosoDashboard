@@ -1,0 +1,133 @@
+@page "/documents"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IDocumentService DocumentService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Documents - ContosoDashboard</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Documents</h1>
+            <p class="text-muted mb-0">Upload and organize work documents securely.</p>
+        </div>
+    </div>
+
+    <div class="card document-upload-card">
+        <div class="card-header"><h5 class="mb-0">Upload documents</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="document-title">Title</label>
+                    <input id="document-title" class="form-control" maxlength="255" @bind="title" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="document-category">Category</label>
+                    <select id="document-category" class="form-select" @bind="category">
+                        <option value="">Select a category</option>
+                        @foreach (var option in DocumentRules.Categories)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="document-description">Description</label>
+                    <textarea id="document-description" class="form-control" maxlength="2000" @bind="description"></textarea>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="document-tags">Tags</label>
+                    <input id="document-tags" class="form-control" maxlength="2000" @bind="tags" placeholder="Optional tags" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="document-files">Files</label>
+                    <InputFile id="document-files" OnChange="SelectFiles" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png" />
+                    <div class="form-text">PDF, Office documents, text, JPEG, or PNG. Maximum 25 MB per file.</div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(statusMessage))
+            {
+                <div class="alert document-upload-status @(uploadFailed ? "alert-danger" : "alert-info") mt-3" role="status">@statusMessage</div>
+            }
+
+            <button class="btn btn-primary mt-3" disabled="@(selectedFiles.Count == 0 || uploading)" @onclick="UploadFiles">
+                @if (uploading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span><span>Uploading...</span>
+                }
+                else
+                {
+                    <span>Upload selected files</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<IBrowserFile> selectedFiles = new();
+    private string title = string.Empty;
+    private string category = string.Empty;
+    private string? description;
+    private string? tags;
+    private string? statusMessage;
+    private bool uploading;
+    private bool uploadFailed;
+    private int currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claim = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        int.TryParse(claim, out currentUserId);
+    }
+
+    private void SelectFiles(InputFileChangeEventArgs args)
+    {
+        selectedFiles.Clear();
+        selectedFiles.AddRange(args.GetMultipleFiles(10));
+        statusMessage = selectedFiles.Count == 0 ? "Select at least one file." : $"{selectedFiles.Count} file(s) ready to upload.";
+        uploadFailed = false;
+    }
+
+    private async Task UploadFiles()
+    {
+        if (currentUserId <= 0 || selectedFiles.Count == 0) return;
+        uploading = true;
+        uploadFailed = false;
+        statusMessage = "Uploading and scanning files...";
+        try
+        {
+            var completed = 0;
+            foreach (var file in selectedFiles)
+            {
+                await using var stream = file.OpenReadStream(DocumentRules.MaxFileSize);
+                var request = new UploadRequest(title, description, category, tags, null, null, file.Name, file.ContentType, file.Size);
+                var result = await DocumentService.UploadAsync(currentUserId, request, stream);
+                if (!result.Succeeded)
+                {
+                    uploadFailed = true;
+                    statusMessage = result.Error ?? "The upload failed.";
+                    return;
+                }
+                completed++;
+                statusMessage = $"Uploaded {completed} of {selectedFiles.Count} file(s).";
+            }
+            statusMessage = $"Successfully uploaded {completed} file(s).";
+            selectedFiles.Clear();
+        }
+        catch (IOException)
+        {
+            uploadFailed = true;
+            statusMessage = "The selected file could not be read.";
+        }
+        finally
+        {
+            uploading = false;
+        }
+    }
+}

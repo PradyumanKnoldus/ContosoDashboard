@@ -164,3 +164,15 @@ main {
 .content {
     padding-top: 1.1rem;
 }
+
+.document-upload-card {
+    max-width: 980px;
+}
+
+.document-upload-card input[type="file"] {
+    min-height: 2.75rem;
+}
+
+.document-upload-status {
+    min-height: 2.5rem;
+}
