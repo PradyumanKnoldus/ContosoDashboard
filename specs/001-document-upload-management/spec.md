@@ -5,6 +5,15 @@
 **Status**: Draft  
 **Input**: User description: `--file StakeholderDocs/document-upload-and-management-feature.md`
 
+## Clarifications
+
+### Session 2026-09-14
+
+- Q: How should malware scanning behave in the offline training environment? → A: Local deterministic scanner abstraction with safe fixtures and malware test fixtures
+- Q: Can explicit document sharing grant access to a user or team outside the document's project membership? → A: Explicit sharing grants access to authenticated users or existing teams outside project membership; no public or external sharing
+- Q: Should administrators be allowed to edit, replace, share, and delete any document, or only view and audit them? → A: Administrators have full document management and audit access
+- Q: How long should document activity audit records be retained after a document is permanently deleted? → A: Retain audit records for seven years
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Upload and organize a document (Priority: P1)
@@ -98,24 +107,24 @@ As an administrator, I want document activity and summary reports so that I can 
 
 - **FR-001**: The system MUST allow authenticated users to upload one or more files in the supported categories: PDF, Microsoft Word, Excel, PowerPoint, plain text, JPEG, and PNG.
 - **FR-002**: The system MUST limit each uploaded file to 25 MB and MUST show a clear validation message when the limit is exceeded.
-- **FR-003**: The system MUST reject unsupported, empty, unsafe, or malware-positive files before making them available to users.
+- **FR-003**: The system MUST reject unsupported, empty, unsafe, or malware-positive files before making them available to users, using an `IFileScanService` boundary with a deterministic local implementation for training and test fixtures for safe and malware-positive files.
 - **FR-004**: The system MUST require a document title and category selected from Project Documents, Team Resources, Personal Files, Reports, Presentations, or Other.
 - **FR-005**: The system MUST support optional descriptions, project associations, task associations, and user-defined tags.
 - **FR-006**: The system MUST record the uploader, upload date and time, file size, and MIME type for each document; MIME type storage MUST support values up to 255 characters.
 - **FR-007**: The system MUST store document content outside web-accessible content locations and MUST use a unique generated stored name that does not contain the user-supplied filename.
-- **FR-008**: The system MUST authorize upload associations, viewing, previewing, downloading, editing, replacing, sharing, and deleting against the current user's role, ownership, project membership, and task access.
-- **FR-009**: Employees MUST be able to view their own documents; team leads MUST be able to manage documents uploaded by their team members; project managers MUST be able to manage documents associated with their projects; administrators MUST have access to all documents for audit purposes.
+- **FR-008**: The system MUST authorize upload associations, viewing, previewing, downloading, editing, replacing, sharing, and deleting against the current user's role, ownership, project membership, task access, explicit share grants, and administrator privileges.
+- **FR-009**: Employees MUST be able to view their own documents; team leads MUST be able to manage documents uploaded by their team members; project managers MUST be able to manage documents associated with their projects; administrators MUST have full document management and audit access for all documents.
 - **FR-010**: The system MUST provide a document list showing title, category, upload date, file size, and associated project, with sorting by title, upload date, category, and file size.
 - **FR-011**: The system MUST provide filters for category, associated project, and date range.
 - **FR-012**: The system MUST search accessible documents by title, description, tags, uploader name, and associated project without returning inaccessible documents.
 - **FR-013**: The system MUST allow authorized users to download accessible documents and preview accessible PDFs and images in the browser.
 - **FR-014**: The system MUST allow document owners to edit metadata and replace the document file, subject to the same validation and security rules as upload.
-- **FR-015**: The system MUST allow document owners to share documents with selected users or teams and MUST place shared documents in recipients' Shared with Me view.
+- **FR-015**: The system MUST allow document owners to share documents with selected authenticated users or existing teams, including recipients outside the document's project membership, and MUST place shared documents in recipients' Shared with Me view; public and external sharing MUST NOT be allowed.
 - **FR-016**: The system MUST allow document owners to delete their documents after confirmation and allow project managers to delete documents in their projects; deleted documents MUST no longer be accessible.
 - **FR-017**: The system MUST notify recipients when documents are shared and eligible project members when a new project document is added.
 - **FR-018**: The system MUST support document attachment and upload from authorized task views and MUST associate task documents with the task's project.
 - **FR-019**: The dashboard MUST show the current user's five most recent documents and a document count in its summary area.
-- **FR-020**: The system MUST record uploads, downloads, deletions, and share actions with the document, actor, and time, and MUST restrict audit reports to administrators.
+- **FR-020**: The system MUST record uploads, downloads, deletions, and share actions with the document, actor, and time, and MUST restrict audit reports to administrators; administrator management actions MUST also be auditable, and audit records MUST be retained for seven years after document deletion.
 - **FR-021**: The system MUST support reports for document types, active uploaders, and document access patterns.
 - **FR-022**: The feature MUST work offline with local filesystem storage and MUST expose a storage abstraction so a future production storage provider can replace local storage without changing business behavior.
 - **FR-023**: The feature MUST use integer document identifiers and store category values as text to remain consistent with existing application data conventions.
@@ -125,10 +134,10 @@ As an administrator, I want document activity and summary reports so that I can 
 ### Key Entities
 
 - **Document**: A work file and its searchable metadata, including integer identifier, title, description, category, tags, project and task associations, owner, upload details, MIME type, size, and secure storage reference.
-- **Document Share**: A permission relationship between a document and a user or team, including the recipient and sharing activity.
+- **Document Share**: A permission relationship between a document and an authenticated user or existing team, including the recipient, granted access, and sharing activity; it may grant access beyond project membership but never public or external access.
 - **Document Activity**: An audit record of an upload, download, deletion, share, replacement, or related document action, including actor, document, action, and time.
 - **Project and Task**: Existing work entities that provide document context and constrain association and access.
-- **User and Team**: Existing identity and group entities that provide ownership, role-based permissions, and sharing recipients.
+- **User and Team**: Existing identity and group entities that provide ownership, role-based permissions, administrator privileges, and sharing recipients.
 
 ## Success Criteria *(mandatory)*
 
@@ -148,8 +157,10 @@ As an administrator, I want document activity and summary reports so that I can 
 ## Assumptions
 
 - Existing application authentication, roles, projects, tasks, teams, notifications, and dashboard services remain the source of truth for access and integration.
-- Virus and malware scanning is available as a local or testable validation boundary; the training implementation may use a local substitute, but the feature must not make unscanned content available.
+- Virus and malware scanning is represented by an `IFileScanService`; the offline training implementation uses deterministic safe and malware-positive fixtures, while production can replace it with a real scanner without changing document business behavior. The feature must not make unscanned content available.
 - “Team” recipients are based on existing application team membership and do not require a new team-management workflow.
-- Permanent deletion means the document content and its active metadata are removed from normal user access; audit records remain for administrator reporting.
+- Explicit document sharing grants authenticated recipients access even when they are outside the document's project membership; public and external recipients are out of scope.
+- Administrators may edit, replace, share, and delete any document, and those actions remain in the audit trail.
+- Permanent deletion means the document content and its active metadata are removed from normal user access; audit records remain for administrator reporting for seven years after deletion.
 - The initial feature supports the listed file types only and does not include collaborative editing, external links, version history beyond file replacement, or public sharing.
 - The eight-to-ten-week delivery estimate is a planning constraint, not an acceptance criterion.
